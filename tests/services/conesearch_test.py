@@ -170,6 +170,7 @@ async def test_query_returns_error_votable_on_tap_failure(
                 verb=2,
                 maxrec=None,
                 collection=collection,
+                send_ucd_map=True,
             )
         ]
     )
@@ -206,6 +207,7 @@ async def test_query_publishes_success_event(
                 verb=2,
                 maxrec=None,
                 collection=collection,
+                send_ucd_map=True,
             )
         ]
     )

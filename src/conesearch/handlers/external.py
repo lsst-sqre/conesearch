@@ -174,6 +174,7 @@ async def query(
             verb=params.verb,
             maxrec=params.maxrec,
             collection=collection,
+            send_ucd_map=True,
         ),
         media_type=params.responseformat,
         headers={

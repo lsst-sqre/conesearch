@@ -7,7 +7,7 @@ from importlib.metadata import metadata, version
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import Response
+from fastapi.responses import JSONResponse, Response
 from rubin.repertoire import DiscoveryClient
 from safir.dependencies.http_client import http_client_dependency
 from safir.middleware.ivoa import CaseInsensitiveQueryMiddleware
@@ -18,6 +18,7 @@ from .config import Config
 from .dependencies.config import config_dependency
 from .dependencies.context import context_dependency
 from .handlers.external import external_router
+from .handlers.external_v2 import external_router_v2
 from .handlers.internal import internal_router
 from .services.votable import votable_error
 
@@ -25,14 +26,16 @@ __all__ = ["create_app"]
 
 
 async def _validation_exception_handler(
-    _: Request, exc: RequestValidationError
+    request: Request, exc: RequestValidationError
 ) -> Response:
     """Convert FastAPI validation errors to VOTable error responses.
 
-    The ConeSearch standard requires that invalid parameter errors be
+    The ConeSearch 1.1 standard requires that invalid parameter errors be
     reported as ``QUERY_STATUS=ERROR`` inside a VOTable response with
-    HTTP 200, rather than the HTTP 422 that FastAPI would normally return.
+    HTTP 200. SCS2 routes use real HTTP error codes so are excluded.
     """
+    if "/v2/" in request.url.path:
+        return JSONResponse(status_code=422, content={"detail": exc.errors()})
     message = "; ".join(
         f"{e['loc'][-1] if e['loc'] else 'request'}: {e['msg']}"
         for e in exc.errors()
@@ -92,6 +95,7 @@ def create_app() -> FastAPI:
     )
 
     app.include_router(internal_router)
+    app.include_router(external_router_v2, prefix=f"{config.path_prefix}/v2")
     app.include_router(external_router, prefix=config.path_prefix)
     app.add_middleware(XForwardedMiddleware)
     app.add_middleware(CaseInsensitiveQueryMiddleware)

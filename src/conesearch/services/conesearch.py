@@ -288,14 +288,14 @@ class ConeSearchService:
         return response if response is not None else votable_error(error)
 
     async def _execute_tap_query(
-        self, adql: str, collection: CollectionConfig, maxrec: int
+        self,
+        adql: str,
+        collection: CollectionConfig,
+        maxrec: int,
+        *,
+        send_ucd_map: bool,
     ) -> AsyncGenerator[bytes]:
         """Submit a synchronous TAP query and stream the response.
-
-        If the collection has ``send_ucd_map`` enabled, passes
-        ``CONESEARCH_UCD_MAP`` as a non-standard parameter so the TAP service
-        can inject ConeSearch 1.x UCDs into the response VOTable directly.
-        Collections using UCD1+ natively should set ``send_ucd_map=False``.
 
         Parameters
         ----------
@@ -305,6 +305,10 @@ class ConeSearchService:
             Collection configuration supplying the TAP sync URL and UCD map.
         maxrec
             Row limit passed to the TAP service via the ``MAXREC`` parameter.
+        send_ucd_map
+            If ``True``, passes ``CONESEARCH_UCD_MAP`` so TAP injects
+            ConeSearch 1.x UCDs. Pass ``False`` for SCS2 routes where TAP's
+            native UCD1+ values should be preserved.
 
         Yields
         ------
@@ -327,7 +331,7 @@ class ConeSearchService:
             "QUERY": adql,
             "MAXREC": maxrec,
         }
-        if collection.send_ucd_map:
+        if send_ucd_map:
             data["CONESEARCH_UCD_MAP"] = ",".join(
                 f"{col}:{ucd}" for col, ucd in collection.ucd_map.items()
             )
@@ -377,11 +381,15 @@ class ConeSearchService:
         verb: int,
         maxrec: int | None,
         collection: CollectionConfig,
+        *,
+        send_ucd_map: bool,
     ) -> AsyncGenerator[bytes]:
         """Execute a cone search and stream a ConeSearch-compliant VOTable.
 
-        Streams the raw TAP response  buffering the result sets into memory.
-        UCD injection is left to the TAP service via ``CONESEARCH_UCD_MAP``.
+        Streams the raw TAP response without buffering the result set.
+        UCD injection is left to the TAP service via ``CONESEARCH_UCD_MAP``
+        when ``send_ucd_map`` is ``True`` (SCS 1.1). SCS2 routes pass
+        ``False`` to preserve native UCD1+ values from TAP.
 
         The first ``_PEEK_SIZE`` bytes are buffered to detect
         ``QUERY_STATUS=ERROR`` responses from TAP. On any failure a complete
@@ -406,6 +414,9 @@ class ConeSearchService:
             collection default.
         collection
             Configuration for the target collection.
+        send_ucd_map
+            If ``True``, passes ``CONESEARCH_UCD_MAP`` to TAP so it injects
+            ConeSearch 1.x UCDs. Pass ``False`` for SCS2 routes.
 
         Yields
         ------
@@ -451,7 +462,10 @@ class ConeSearchService:
 
         tap_start = time.monotonic()
         tap_stream = self._execute_tap_query(
-            adql=adql, collection=collection, maxrec=maxrec_value
+            adql=adql,
+            collection=collection,
+            maxrec=maxrec_value,
+            send_ucd_map=send_ucd_map,
         )
 
         try:

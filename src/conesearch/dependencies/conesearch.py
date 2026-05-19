@@ -8,12 +8,20 @@ from fastapi import Depends, HTTPException, Request
 
 from conesearch.config import CollectionConfig, Config
 from conesearch.dependencies.config import config_dependency
-from conesearch.models import ConeSearchParams
+from conesearch.models import ConeSearchParams, ConeSearchParamsV2
 
 __all__ = [
     "collection_dependency",
+    "collection_dependency_v2",
     "get_conesearch_params",
+    "get_conesearch_params_v2",
 ]
+
+
+async def _parse_form(request: Request) -> dict[str, str]:
+    """Parse form data from a POST request, converting keys to lowercase."""
+    form = await request.form()
+    return {k.lower(): v for k, v in form.items() if isinstance(v, str)}
 
 
 async def collection_dependency(
@@ -36,6 +44,38 @@ async def collection_dependency(
     return collection
 
 
+async def get_conesearch_params_v2(
+    request: Request,
+    params: Annotated[ConeSearchParamsV2, Depends()],
+) -> ConeSearchParamsV2:
+    """Parse GET and POST ConeSearch v2 parameters."""
+    if request.method != "POST":
+        return params
+
+    data = await _parse_form(request)
+    return ConeSearchParamsV2.model_validate(data)
+
+
+async def collection_dependency_v2(
+    params: Annotated[ConeSearchParamsV2, Depends(get_conesearch_params_v2)],
+    config: Annotated[Config, Depends(config_dependency)],
+) -> CollectionConfig:
+    """Resolve a TABLE parameter to its collection configuration.
+
+    Raises
+    ------
+    HTTPException
+        With status 400 if no collection is configured for the given table.
+    """
+    for collection in config.collections.values():
+        if collection.table == params.table:
+            return collection
+    raise HTTPException(
+        status_code=400,
+        detail=f"Unknown table '{params.table}'",
+    )
+
+
 async def get_conesearch_params(
     request: Request,
     params: Annotated[ConeSearchParams, Depends()],
@@ -44,10 +84,5 @@ async def get_conesearch_params(
     if request.method != "POST":
         return params
 
-    form = await request.form()
-    data: dict[str, str] = {}
-    for key, value in form.items():
-        if not isinstance(value, str):
-            raise TypeError("File upload not supported")
-        data[key.lower()] = value
+    data = await _parse_form(request)
     return ConeSearchParams.model_validate(data)

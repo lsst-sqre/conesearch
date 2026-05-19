@@ -98,17 +98,6 @@ class CollectionConfig(BaseModel):
         ),
     ] = 10000
 
-    send_ucd_map: Annotated[
-        bool,
-        Field(
-            title="Send UCD map to TAP",
-            description=(
-                "If true, passes CONESEARCH_UCD_MAP to TAP so it injects "
-                "ConeSearch 1.x UCDs (ID_MAIN etc.) into the response. "
-            ),
-        ),
-    ] = True
-
     verb1_columns: Annotated[
         list[Annotated[str, Field(pattern=_ADQL_IDENTIFIER_PATTERN)]],
         Field(

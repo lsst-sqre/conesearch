@@ -10,6 +10,7 @@ from safir.metadata import Metadata as SafirMetadata
 
 __all__ = [
     "ConeSearchParams",
+    "ConeSearchParamsV2",
     "IVOAStandardId",
     "Index",
     "ResponseFormat",
@@ -27,6 +28,7 @@ class IVOAStandardId(StrEnum):
     """IVOA standard identifiers used in VOSI capabilities responses."""
 
     CONE_SEARCH = "ivo://ivoa.net/std/ConeSearch#query-1.1"
+    CONE_SEARCH_V2 = "ivo://ivoa.net/SCS2#query-2.0"
     VOSI_AVAILABILITY = "ivo://ivoa.net/std/VOSI#availability"
     VOSI_CAPABILITIES = "ivo://ivoa.net/std/VOSI#capabilities"
 
@@ -121,3 +123,9 @@ class ConeSearchParams(BaseModel):
     def time_constraint(self) -> TimeConstraint | None:
         """Return the parsed TIME parameter as a `TimeConstraint` object."""
         return self._time_constraint
+
+
+class ConeSearchParamsV2(ConeSearchParams):
+    """Parameters for a ConeSearch v2 query."""
+
+    table: Annotated[str, Field(min_length=1)]
