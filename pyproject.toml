@@ -19,11 +19,14 @@ classifiers = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "astropy>=7.2.0",
     "fastapi>=0.100",
     "pydantic>2",
     "pydantic-settings>=2",
-    "safir>=5",
+    "rubin-repertoire>=0.12.1",
+    "safir[kafka]>=5",
     "uvicorn[standard]>=0.34",
+    "vo-models>=0.4.2",
 ]
 dynamic = ["version"]
 
@@ -57,6 +60,7 @@ tox = [
 ]
 typing = [
     "mypy>=1.15",
+    "types-PyYAML",
 ]
 
 [tool.coverage.run]
@@ -129,6 +133,14 @@ python_files = ["tests/*.py", "tests/*/*.py"]
 [tool.ruff]
 extend = "ruff-shared.toml"
 
+[tool.ruff.lint.extend-per-file-ignores]
+"src/conesearch/services/conesearch.py" = [
+    "S608",  # ADQL is not SQL; interpolated values are config or validated floats
+]
+"tests/**" = [
+    "S314",  # XML parsed in tests is our own output, not untrusted network input
+]
+
 [tool.ruff.lint.isort]
 known-first-party = ["conesearch", "tests"]
 
@@ -146,3 +158,4 @@ new_fragment_template = "file:changelog.d/_template.md.jinja"
 skip_fragments = "_template.md.jinja"
 
 [tool.setuptools_scm]
+

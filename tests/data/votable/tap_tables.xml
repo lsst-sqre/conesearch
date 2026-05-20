@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<vosi:tableset
+    xmlns:vosi="http://www.ivoa.net/xml/VOSITables/v1.0"
+    xmlns:vod="http://www.ivoa.net/xml/VODataService/v1.1"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <schema>
+    <name>test</name>
+    <table type="table">
+      <name>test.Object</name>
+      <description>Test object catalog</description>
+      <column>
+        <name>objectId</name>
+        <description>Unique object identifier</description>
+        <ucd>meta.id;meta.main</ucd>
+        <dataType xsi:type="vod:TAPType">VARCHAR</dataType>
+      </column>
+      <column>
+        <name>coord_ra</name>
+        <description>Right ascension in degrees (ICRS)</description>
+        <ucd>pos.eq.ra;meta.main</ucd>
+        <dataType xsi:type="vod:TAPType">DOUBLE</dataType>
+      </column>
+      <column>
+        <name>coord_dec</name>
+        <description>Declination in degrees (ICRS)</description>
+        <ucd>pos.eq.dec;meta.main</ucd>
+        <dataType xsi:type="vod:TAPType">DOUBLE</dataType>
+      </column>
+      <column>
+        <name>flux</name>
+        <description>Flux measurement</description>
+        <ucd>phot.flux</ucd>
+        <dataType xsi:type="vod:TAPType">DOUBLE</dataType>
+      </column>
+    </table>
+    <table type="table">
+      <name>test.Source</name>
+      <description>Source table not served by this cone search service</description>
+    </table>
+  </schema>
+</vosi:tableset>

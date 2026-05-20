@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VOTABLE version="1.4" xmlns="http://www.ivoa.net/xml/VOTable/v1.3">
+  <RESOURCE type="results">
+    <INFO name="QUERY_STATUS" value="OK"/>
+    <TABLE>
+      <FIELD name="objectId" datatype="long" ucd="ID_MAIN"/>
+      <FIELD name="coord_ra" datatype="double" ucd="POS_EQ_RA_MAIN"/>
+      <FIELD name="coord_dec" datatype="double" ucd="POS_EQ_DEC_MAIN"/>
+      <DATA>
+        <TABLEDATA>
+          <TR><TD>12345</TD><TD>150</TD><TD>2</TD></TR>
+        </TABLEDATA>
+      </DATA>
+    </TABLE>
+  </RESOURCE>
+</VOTABLE>
