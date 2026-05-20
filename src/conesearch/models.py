@@ -128,4 +128,10 @@ class ConeSearchParams(BaseModel):
 class ConeSearchParamsV2(ConeSearchParams):
     """Parameters for a ConeSearch v2 query."""
 
+    model_config = ConfigDict(extra="forbid")
+
+    pos: str | None = None
     table: Annotated[str, Field(min_length=1)]
+    ra: Annotated[float | None, Field(ge=0, le=360)] = None  # type: ignore[assignment]
+    dec: Annotated[float | None, Field(ge=-90, le=90)] = None  # type: ignore[assignment]
+    sr: Annotated[float | None, Field(ge=0, le=180.0)] = None  # type: ignore[assignment]
