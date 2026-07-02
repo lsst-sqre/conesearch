@@ -144,7 +144,7 @@ async def test_query_invalid_ra(client: AsyncClient) -> None:
         "/api/conesearch/test/query",
         params={"RA": "400.0", "DEC": "2.2", "SR": "0.1"},
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == 400, response.text
     assert b"QUERY_STATUS" in response.content
     assert b"ERROR" in response.content
 
@@ -155,7 +155,7 @@ async def test_query_invalid_dec(client: AsyncClient) -> None:
         "/api/conesearch/test/query",
         params={"RA": "150", "DEC": "-95.0", "SR": "0.1"},
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == 400, response.text
     assert b"QUERY_STATUS" in response.content
     assert b"ERROR" in response.content
 
@@ -181,7 +181,7 @@ async def test_query_sr_too_large(client: AsyncClient) -> None:
         "/api/conesearch/test/query",
         params={"RA": "150", "DEC": "2", "SR": "181.0"},
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == 400, response.text
     assert b"ERROR" in response.content
 
 
@@ -212,7 +212,7 @@ async def test_query_missing_required_param(client: AsyncClient) -> None:
         "/api/conesearch/test/query",
         params={"DEC": "2", "SR": "0.1"},
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == 400, response.text
     assert b"ERROR" in response.content
 
 
@@ -232,7 +232,7 @@ async def test_query_invalid_verb(client: AsyncClient) -> None:
         "/api/conesearch/test/query",
         params={"RA": "150", "DEC": "2", "SR": "0.1", "VERB": "5"},
     )
-    assert response.status_code == 200, response.text
+    assert response.status_code == 400, response.text
     assert b"ERROR" in response.content
 
 

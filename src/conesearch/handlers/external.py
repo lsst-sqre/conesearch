@@ -32,19 +32,20 @@ _CAPABILITIES_TEMPLATE = """\
 <vosi:capabilities
     xmlns:vosi="http://www.ivoa.net/xml/VOSICapabilities/v1.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:cs="http://www.ivoa.net/xml/ConeSearch/v1.0">
+    xmlns:cs="http://www.ivoa.net/xml/ConeSearch/v1.0"
+    xmlns:vod="http://www.ivoa.net/xml/VODataService/v1.1">
   <capability standardID="{vosi_capabilities_id}">
-    <interface type="vod:ParamHTTP">
+    <interface xsi:type="vod:ParamHTTP">
       <accessURL use="full">{capabilities_url}</accessURL>
     </interface>
   </capability>
   <capability standardID="{vosi_availability_id}">
-    <interface type="vod:ParamHTTP">
+    <interface xsi:type="vod:ParamHTTP">
       <accessURL use="full">{availability_url}</accessURL>
     </interface>
   </capability>
   <capability xsi:type="cs:ConeSearch" standardID="{cone_search_id}">
-    <interface type="vod:ParamHTTP" role="std" version="1.1">
+    <interface xsi:type="vod:ParamHTTP" role="std" version="1.1">
       <accessURL use="base">{query_url}</accessURL>
     </interface>
     <maxSR>{max_sr}</maxSR>

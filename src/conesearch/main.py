@@ -30,8 +30,13 @@ async def _validation_exception_handler(
     """Convert FastAPI validation errors to VOTable error responses.
 
     The ConeSearch standard requires that invalid parameter errors be
-    reported as ``QUERY_STATUS=ERROR`` inside a VOTable response with
-    HTTP 200, rather than the HTTP 422 that FastAPI would normally return.
+    reported as ``QUERY_STATUS=ERROR`` inside a VOTable response, rather
+    than the HTTP 422 that FastAPI would normally return. Per DALI 1.1
+    section 4.2, errors in the use of the protocol (such as a missing or
+    unparseable RA, DEC, or SR) are a client-request problem and must be
+    reported with a 4xx status code, so HTTP 400 is used instead of 422
+    or the 200 used for errors detected only after a query has already
+    started streaming.
     """
     message = "; ".join(
         f"{e['loc'][-1] if e['loc'] else 'request'}: {e['msg']}"
@@ -40,7 +45,7 @@ async def _validation_exception_handler(
     return Response(
         content=votable_error(message),
         media_type="application/x-votable+xml",
-        status_code=200,
+        status_code=400,
     )
 
 

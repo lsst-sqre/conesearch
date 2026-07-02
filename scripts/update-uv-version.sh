@@ -7,9 +7,9 @@
 # http://redsymbol.net/articles/unofficial-bash-strict-mode/ for details.
 set -euo pipefail
 
-# Determine the current frozen uv version. Since the lint group depends on
-# pre-commit-uv, uv should always be part of its dependencies and thus updated
-# when running uv lock --upgrade, which should be run before this script.
+# Determine the current frozen uv version. uv is part of the lint group's
+# dependencies and thus updated when running uv lock --upgrade, which should
+# be run before this script.
 uv_version=$(uv export -q --no-hashes --only-group lint \
              | grep ^uv== | sed 's/.*=//')
 

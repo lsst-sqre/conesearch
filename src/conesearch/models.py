@@ -26,7 +26,7 @@ class Index(BaseModel):
 class IVOAStandardId(StrEnum):
     """IVOA standard identifiers used in VOSI capabilities responses."""
 
-    CONE_SEARCH = "ivo://ivoa.net/std/ConeSearch#query-1.1"
+    CONE_SEARCH = "ivo://ivoa.net/std/conesearch#query-1.1"
     VOSI_AVAILABILITY = "ivo://ivoa.net/std/VOSI#availability"
     VOSI_CAPABILITIES = "ivo://ivoa.net/std/VOSI#capabilities"
 
